@@ -1,0 +1,6 @@
+Analysis for 100 nm:
+Grain boundary peak = -1.0820535978084977
+Grain boundary fwhm = 0.012166967911380167
+Grain interior peak = -1.0829106214607214
+Grain interior fwhm = 0.012292427814475093
+Diff of GB/GI =-0.0008570236522236208

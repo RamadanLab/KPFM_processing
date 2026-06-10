@@ -1,0 +1,8 @@
+Analysis for 80 nm [in mV]:
+Grain boundary peak = -815.8861732529332
+Grain boundary fwhm = 14.212122403118471
+Grain boundary min, max spread = 0, 0
+Grain interior peak = -817.0477069437769
+Grain interior fwhm = 14.99549670274008
+Grain interior min, max spread = 0, 0
+Diff of GB/GI = 1.161533690843708

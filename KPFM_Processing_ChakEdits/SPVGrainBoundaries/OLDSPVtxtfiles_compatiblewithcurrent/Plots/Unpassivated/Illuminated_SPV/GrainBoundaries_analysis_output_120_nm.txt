@@ -1,0 +1,8 @@
+Analysis for 120 nm [in mV]:
+Grain boundary peak = 177.13310783384784
+Grain boundary fwhm = 30.72734227193349
+Grain boundary min, max spread = 0, 0
+Grain interior peak = 176.18840012786012
+Grain interior fwhm = 31.358423840074597
+Grain interior min, max spread = 0, 0
+Diff of GB/GI = 0.9447077059877018

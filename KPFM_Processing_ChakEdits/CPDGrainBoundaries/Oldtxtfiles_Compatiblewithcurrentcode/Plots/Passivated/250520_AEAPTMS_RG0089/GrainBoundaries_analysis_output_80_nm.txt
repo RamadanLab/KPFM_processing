@@ -1,0 +1,6 @@
+Analysis for 80 nm:
+Grain boundary peak = -0.9852860722956523
+Grain boundary fwhm = 0.01419038767907859
+Grain interior peak = -0.9861841363376364
+Grain interior fwhm = 0.01483466929490053
+Diff of GB/GI =-0.0008980640419840036

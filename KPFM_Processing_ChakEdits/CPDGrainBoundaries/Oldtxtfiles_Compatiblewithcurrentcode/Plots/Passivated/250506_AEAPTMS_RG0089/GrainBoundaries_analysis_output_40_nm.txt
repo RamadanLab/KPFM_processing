@@ -1,0 +1,6 @@
+Analysis for 40 nm:
+Grain boundary peak = -1.0818869966465967
+Grain boundary fwhm = 0.01227733188992688
+Grain interior peak = -1.0823933173901175
+Grain interior fwhm = 0.012120263667109112
+Diff of GB/GI =-0.0005063207435207495
