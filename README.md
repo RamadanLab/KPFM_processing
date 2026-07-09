@@ -8,3 +8,4 @@ CPDGrainBoundaryAnalysis - for dark CPD anaylsis with errors over multiple image
 
 SPVGrainBoundaryAnalysis - for plotting CPD of dark, illluminated and recovery and SPV of illuminated and recovery grain boundary/interiour difference. 
 
+When using this code please cite the following: arXiv:2607.07221
