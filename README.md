@@ -10,11 +10,10 @@ When using this code please cite the following: arXiv:2607.07221
 | File Name | Description |
 | --- | --- |
 | **`CPDGrainBoundaryAnalysis - IndividualScatter.ipynb`** | Extracts and plots the contact potential difference delta ($\Delta$CPD) between grain boundaries and interiors across varying mask widths using automated single-Gaussian fitting. |
-| **`LineByLineTimeSeriesProcessing.ipynb`** | Extracts time-resolved surface photovoltage kinetics by fitting Gaussian curves row-by-row across raw binary (`.npy`) KPFM images. |
-| **`SPVGrainBoundaryAnalysis.ipynb`** | Automates batch potential shift analyses across passivated and unpassivated samples to generate localized diagnostic reports and multi-dataset summary plots. |
-| **`GBGIvsWholeImages.ipynb`** | Generates comparative overlay diagrams comparing the distinct electrical potential distributions of grain boundaries, grain interiors, and whole-image control data. |
-| **`TimeSeriesProcessing_BCK_Main.ipynb`** | Tracks long-term chronological potential shifts and distribution spreads using multi-Gaussian profiling and exponential saturation modeling. |
-| **`SpreadAnalysis.ipynb`** | Fits full-image CPD distribution histograms to Gaussian curves to visually compare and evaluate potential spreads across different sample processing conditions. |
+| **`SPVGrainBoundaryAnalysis.ipynb`** | For grain mask analysis of SPV and CPD before, with and post-illumination. |
+| **`GBGIvsWholeImages.ipynb`** | Generates plots to compare distributions of grain boundaries, grain interiors, and whole-image. |
+| **`TimeSeriesProcessing_Main.ipynb`** | For long or short term time series with exponential fitting and full time series plotting. |
+| **`SpreadAnalysis.ipynb`** | Fits single image distributions with Gaussian fitting to extract fit peak and FWHM. |
 
 ---
 
