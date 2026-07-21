@@ -1,0 +1,7 @@
+Peak: -464.452 mV
+Error: 0.057mV
+FWHM: 13.56 mV
+Error: 0.135mV
+FWHM Bounds: [-471.23, -457.67]mV
+Sigma: 5.759 mV
+Error: 0.057mV
