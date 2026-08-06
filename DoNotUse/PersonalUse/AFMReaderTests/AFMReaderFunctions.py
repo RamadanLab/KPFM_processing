@@ -42,7 +42,7 @@ def show_image (image_data, scale, channel_name, cmap_label = ''):
     pixels_x, pixels_y = image_data.shape
     x_nm = pixels_x*scale
     y_nm = pixels_y *scale
-    fig, ax = plt.subplots(figsize=(8,6))
+    fig, ax = plt.subplots(figsize=(6,8))
 
     im = ax.imshow(
         image_data, 
@@ -115,17 +115,12 @@ def median_line_level(image_array):
 
 # For iterating through a full folder of data. 
 # filetype input MUST be just ibw, gwy, jpk or spm. No other filetypes accepted
-def load_from_folder (folder_path, save_path = None, filetype = '', channel_type = ''):
-    all_data = []
-    all_scales = []
+def load_from_folder (folder_path, save_path, filetype = '', channel_type = ''):
     if folder_path: 
-        sorted_files= sorted(list(Path(folder_path).glob(f"*.{channel_type}"))) 
+        sorted_files= sorted(list(Path(folder_path).glob(f"*.{filetype}"))) 
     for file_path in sorted_files:
         try: 
             image, scale = load_image(file_path, filetype, channel_type)
-            # Append each to an array: 
-            all_data.append[image]
-            all_scales.append[scale]
 
             # For saving
             if save_path: 
@@ -148,3 +143,4 @@ def load_from_folder (folder_path, save_path = None, filetype = '', channel_type
             
             # Stopping code
             raise e
+    return 
