@@ -90,8 +90,9 @@ def exponential_fitting (peaks, time, save_path = None, measurement = '', peaksc
         with open(output_file, 'w') as f: 
            f.write(fit_params)
         print (f" Fitting params saved as Fitting_params_{measurement}.txt")
+        print(fit_params)
     else: 
         print("Cannot save fitting parameters, printing below")
         print(fit_params)
     
-    return fit_outputs, fit_params
+    return fit_outputs # Outputting x, y, x_fit (if <100 points), y_fit. 
