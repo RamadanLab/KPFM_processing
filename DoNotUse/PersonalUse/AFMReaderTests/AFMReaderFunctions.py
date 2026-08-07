@@ -144,3 +144,25 @@ def load_from_folder (folder_path, save_path, filetype = '', channel_type = ''):
             # Stopping code
             raise e
     return 
+
+def npy_to_histogram (file_path, bins_method='auto'): 
+    data = np.load(file_path)
+    # Flattening into 1D 
+    flat_data = data.flatten()
+    flat_data = flat_data[np.isfinite(flat_data)]
+    
+    #Creating histogram: 
+    density, bin_edges = np.histogram(flat_data, bins = bins_method, density = True)
+
+    # Finding midpoints
+    bin_midpoints = (bin_edges[:-1] + bin_edges[1:]) / 2
+
+    # placing into a 2D array [Matching gwyddion output as closely as possible]
+    output_data = np.column_stack((bin_midpoints, density))
+
+    
+    # Quick plotting to debug if needed
+    #plt.plot(density, bin_midpoints)
+    #plt.show()
+
+    return output_data
