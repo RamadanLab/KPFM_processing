@@ -127,7 +127,9 @@ def fitting_folder(file_directory, im_time = None, peak_guess = None, save_path 
         image_time = im_time
     else: 
         image_time = 1
+
     files=sorted([f for f in os.listdir(file_directory) if f.endswith('.npy')])
+    
     for filename in enumerate(files, desc="Processing files"):
             file_path = os.path.join(file_directory, filename)
             npy_data = np.load(file_path)
