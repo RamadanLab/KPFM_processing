@@ -123,7 +123,7 @@ def fitting_folder(file_directory, im_time = None, peak_guess = None, save_path 
     x_left = []
     x_right = []
     # Setting x_data for time series
-    if image_time: 
+    if im_time: 
         image_time = im_time
     else: 
         image_time = 1
