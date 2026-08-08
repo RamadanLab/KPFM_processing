@@ -117,8 +117,7 @@ def fitting_individual_file(file_path, rows, peak_guess, save_path=None):
     return params, vals, spread
     plt.show()
 
-
-def fitting_folder (file_directory, im_time = None, peak_guess = None, save_path = None):
+def fitting_folder(file_directory, im_time = None, peak_guess = None, save_path = None):
     gaussian_peaks= []
     time = []
     x_left = []

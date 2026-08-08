@@ -11,6 +11,7 @@ def d_adjusted_exponential(t, A, tau):
     return (A/tau)*np.exp(-t/tau)
 
 def exponential_fitting (peaks, time, save_path = None, measurement = '', peakscale = ''): 
+
     # Uncomment to check if plotting correct stuff
     #print(peaks)
     #print(time)
@@ -96,3 +97,12 @@ def exponential_fitting (peaks, time, save_path = None, measurement = '', peaksc
         print(fit_params)
     
     return fit_outputs # Outputting x, y, x_fit (if <100 points), y_fit. 
+
+# For working out fitting for 2D light on (initial increase w drop after.)
+def fitting_for_2D(peaks, time, save_path = None, measurement = '', peakscale = ''):
+    if peakscale == 'V':
+        adjusted_peaks = [round(x*1000,4) if not np.isnan(x) else np.nan for x in peaks]
+    elif peakscale == 'mV': 
+        adjusted_peaks = peaks
+    else: 
+        print("Error, set peakscale as either V or mV")
