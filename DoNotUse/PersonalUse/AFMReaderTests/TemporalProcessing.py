@@ -129,7 +129,7 @@ def fitting_folder(file_directory, im_time = None, peak_guess = None, save_path 
         image_time = 1
     
     for filename in enumerate(files, desc="Processing files"):
-            files=sorted([f for f in os.listdir(file_directory) if f.endswith('.txt')])
+            files=sorted([f for f in os.listdir(file_directory) if f.endswith('.npy')])
             file_path = os.path.join(file_directory, filename)
             npy_data = np.load(file_path)
             data = AFMReaderFunctions.npy_to_histogram(npy_data)
