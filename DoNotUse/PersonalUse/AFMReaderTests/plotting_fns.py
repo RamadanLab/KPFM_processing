@@ -127,16 +127,16 @@ def time_series_plot(x_fit, y,
                      color = None,
                      measurement = None, scale = None): 
 
-    if scale == 'V': 
+    '''if scale == 'V': 
         x_fit = [round(i*1000,4) if not np.isnan(i) else np.nan for i in x_fit]
         x_left = [round(i*1000,4) if not np.isnan(i) else np.nan for i in x_left]
         x_right = [round(i*1000,4) if not np.isnan(i) else np.nan for i in x_right]
-    elif scale == "mV": 
+    elif scale == 'mV': 
         x_fit = x_fit
         x_left = x_left
         x_right = x_right
     else: 
-        print("Please correct scale input to either V or mV")
+        print("Please correct scale input to either V or mV")'''
 
     if color: 
         color = color
@@ -166,15 +166,12 @@ def time_series_plot(x_fit, y,
     #Dynamic bounds 
     xbound_top, xbound_bottom = (np.max(x_right)*1.1),(np.min(x_left)*0.9)
     ybound_left, ybound_right = np.min(y), np.max(y)
-    ax.set_ylim(xbound_top, xbound_bottom)
+    ax.set_ylim(xbound_bottom, xbound_top)
     ax.set_xlim(ybound_left, ybound_right)
 
     # Axis labels
     plt.xlabel("Time (s)")
-    if measurement: 
-        plt.ylabel(f"{measurement}({scale})")
-    else: 
-        plt.ylabel(f"CPD (mV)")
+    plt.ylabel(f"{measurement}(mV)")
 
     # main plotting: 
     plt.plot(y,x_fit,'-', label = 'Average SPV', color=color, linewidth=line_width)

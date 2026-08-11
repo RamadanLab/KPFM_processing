@@ -1,7 +1,7 @@
 # Functions for reading and saving AFM images: 
 from AFMReader.ibw import load_ibw
 from AFMReader.jpk import load_jpk
-from AFMReader.spm import load_spm
+#from AFMReader.spm import load_spm
 from AFMReader.gwy import load_gwy
 import matplotlib as plt
 import matplotlib.pyplot as plt
@@ -21,11 +21,11 @@ def load_image(file_path, filetype = '', channel_name = ''):
                                                             channel_name)
         print(f"Success! {filetype} has loaded")
         return image, pixel_to_nanometre_scaling_factor
-    elif filetype == "spm": 
-        image, pixel_to_nanometre_scaling_factor = load_spm(file_path, 
-                                                            channel_name)
-        print(f"Success! {filetype} has loaded")
-        return image, pixel_to_nanometre_scaling_factor
+   # elif filetype == "spm": 
+   #     image, pixel_to_nanometre_scaling_factor = load_spm(file_path, 
+   #                                                         channel_name)
+   #     print(f"Success! {filetype} has loaded")
+   #     return image, pixel_to_nanometre_scaling_factor
     elif filetype =="gwy": 
         image, pixel_to_nanometre_scaling_factor = load_gwy(file_path, 
                                                             channel_name)

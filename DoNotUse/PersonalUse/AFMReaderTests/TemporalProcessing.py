@@ -29,13 +29,13 @@ def extract_and_save_params(popt, pcov, perr, file_path, save_path):
 
     # Optional: print for debugging
     # 3. Create the summary text for the plot
-    statistics=(f"Peak: {highest['cen']*1000:.3f} mV\n"
-                f"Error: {np.sqrt(pcov[1,1])*1000:.3f}mV\n"
-              f"FWHM: {fwhm*1000:.2f} mV\n"
-              f"Error: {np.sqrt(pcov[2,2])*2.355*1000:.3f}mV\n"
-              f"FWHM Bounds: [{x_left*1000:.2f}, {x_right*1000:.2f}]mV\n"
-              f"Sigma: {sigma*1000:.3f} mV\n"
-              f"Error: {np.sqrt(pcov[2,2])*1000:.3f}mV\n")
+    statistics=(f"Peak: {highest['cen']:.3f} mV\n"
+                f"Error: {np.sqrt(pcov[1,1]):.3f}mV\n"
+              f"FWHM: {fwhm:.2f} mV\n"
+              f"Error: {np.sqrt(pcov[2,2])*2.355:.3f}mV\n"
+              f"FWHM Bounds: [{x_left:.2f}, {x_right:.2f}]mV\n"
+              f"Sigma: {sigma:.3f} mV\n"
+              f"Error: {np.sqrt(pcov[2,2]):.3f}mV\n")
     # print(statistics)
 
     if save_path is not None:
@@ -54,9 +54,9 @@ def gaussian(x, A, mu, sigma): # This is redundant, multigaussian will fit a sin
     return A * np.exp(-(x - mu)**2 / (2 * sigma**2))
 
 # Function to model N Gaussians
-def multi_gaussian(x, n_peaks, *params):
-    n = len(params) // n_peaks
-    y = np.zeros_like(x)
+def multi_gaussian(x, *params):
+    n = len(params) // 3
+    y = np.zeros_like(x, dtype=float)
     for i in range(n):
         amp = params[i * 3]
         cen = params[i * 3 + 1]
@@ -64,7 +64,7 @@ def multi_gaussian(x, n_peaks, *params):
         y += amp * np.exp(-((x - cen) ** 2) / (2 * wid ** 2))
     return y
 
-def estimate_guess_from_data(x, y, n_peaks, prominence=0.1, distance=10):
+def estimate_guess_from_data(x, y, n_peaks= 1, prominence=0.1, distance=10):
     y_smooth = gaussian_filter1d(y, sigma=2)
     peaks, _ = find_peaks(y_smooth, prominence=prominence, distance=distance)
     
@@ -82,30 +82,37 @@ def estimate_guess_from_data(x, y, n_peaks, prominence=0.1, distance=10):
         wid =x_range/50 # Adjust based on data
         guess += [amp, cen, wid]
     
+    if len(guess) == 0:
+        guess = [np.max(y), x[np.argmax(y)], np.ptp(x) / 50]
+        return guess, 1
+
     return guess, len(peaks)
 
-def fitting_individual_file(file_path, rows, peak_guess, save_path=None):
+def fitting_individual_file(file_path, peak_guess = 1, save_path=None):
 
     #print(f"\nProcessing file: {filename}") #Use if you want each individual file processed 
-    with open(file_path, 'r', encoding='utf-8', errors='replace') as f:
-        data = np.loadtxt(f, skiprows=rows)
 
+    data = AFMReaderFunctions.npy_to_histogram(file_path, bins_method='auto')
+    #print(np.shape(data))
     # Separating data:
     x_data = data[:, 0]
     y_data = data[:, 1]
 
     # Estimate initial guess and peak count based of personal peak number
-    initial_guess, n_peaks = estimate_guess_from_data(x_data, y_data, peak_guess)
+    initial_guess, n_peaks = estimate_guess_from_data(x_data, y_data, n_peaks = peak_guess)
 
     # Find fitting parameters:
+    #print(np.shape(x_data))
+    #print(np.shape(y_data))
+    print(f"X-Data Range: {np.min(x_data):.4f} to {np.max(x_data):.4f}")
     popt, pcov = curve_fit(multi_gaussian, x_data, y_data, p0=initial_guess, maxfev=1000000)
 
     # Using x_fit if datapoints are low to improve fitting
     if len(x_data) < 2000: 
         x_fit= np.linspace(np.min(x_data), np.max(x_data), 10000)
-        y_fit=multi_gaussian(x_fit, n_peaks, *popt)
+        y_fit=multi_gaussian(x_fit, *popt)
     else: 
-        y_fit=multi_gaussian(x_data, n_peaks, *popt)
+        y_fit=multi_gaussian(x_data, *popt)
 
     #Find errors for A, mu, sigma from pcov. 
     perr=np.sqrt(np.diag(pcov))
@@ -117,7 +124,7 @@ def fitting_individual_file(file_path, rows, peak_guess, save_path=None):
     return params, vals, spread
     plt.show()
 
-def fitting_folder(file_directory, im_time = None, peak_guess = None, save_path = None):
+def fitting_folder(file_directory, im_time = None,save_path = None):
     gaussian_peaks= []
     time = []
     x_left = []
@@ -128,32 +135,35 @@ def fitting_folder(file_directory, im_time = None, peak_guess = None, save_path 
     else: 
         image_time = 1
     clean_directory = Path(str(file_directory).strip("'\"").replace('\xa0', ' '))
-    files=sorted([f for f in os.listdir(clean_directory) if f.endswith('*.npy')])
-    
+    files=sorted([f for f in os.listdir(clean_directory) if f.endswith('.npy')])
+
+    t = 0 
     for filename in files:
             file_path = os.path.join(clean_directory, filename)
-            npy_data = np.load(file_path)
-            data = AFMReaderFunctions.npy_to_histogram(npy_data)
+            array = np.load(file_path)
+            print(array)
+            data = AFMReaderFunctions.npy_to_histogram(file_path, bins_method='auto')
+            
             #print(f"\nProcessing file: {filename}")
             # Separate data 
             x_data = data[:, 0]
+            scale_factor = 1e6
+            x_data = x_data/scale_factor
+            print(f"post conversion{x_data[0]}")
             y_data = data[:, 1]
 
             # Estimate initial guess and peak count based of personal peak number
-            initial_guess, n_peaks = estimate_guess_from_data(x_data, y_data, peak_guess)
+            initial_guess, n_peaks = estimate_guess_from_data(x_data, y_data, n_peaks =1)
             # Find fitting parameters:
+            print(f"X-Data Range: {np.min(x_data):.4f} to {np.max(x_data):.4f}")
             popt, pcov = curve_fit(multi_gaussian, x_data, y_data, p0=initial_guess, maxfev=1000000)
-            
-            # Using x_fit if datapoints are low to improve fitting
-            if len(x_data) < 2000: 
-                x_fit= np.linspace(np.min(x_data), np.max(x_data), 10000)
-                y_fit=multi_gaussian(x_fit, n_peaks, *popt)
-            else: 
-                y_fit=multi_gaussian(x_data, n_peaks, *popt)
             
             #Find errors for A, mu, sigma from pcov. 
             perr=np.sqrt(np.diag(pcov))
-                
+            y_fit = multi_gaussian(x_data, *popt)
+            #plt.plot(x_data,y_data)
+            #plt.plot(x_data, y_fit)
+            #plt.show()
             #Extracting and saving params: 
             vals, spread = extract_and_save_params(popt, pcov, perr, file_path, save_path)
 
@@ -162,7 +172,7 @@ def fitting_folder(file_directory, im_time = None, peak_guess = None, save_path 
             x_right.append(spread[3])
             t += image_time
             time.append(t)
-            print(f"Completed fitting for {filename}")
-
+            #print(f"Completed fitting for {filename}")
+    print(f"Completed processing {len(time)} files!")
     return gaussian_peaks, time, x_left, x_right
 
