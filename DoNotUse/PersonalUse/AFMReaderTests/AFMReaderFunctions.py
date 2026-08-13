@@ -114,7 +114,7 @@ def median_line_level(image_array):
     return leveled_image
 
 # For iterating through a full folder of data. 
-# filetype input MUST be just ibw, gwy, jpk or spm. No other filetypes accepted
+# filetype input MUST be just ibw, gwy, jpk or spm. No other filetypes accepted. Will save files as .npy
 def load_from_folder (folder_path, save_path, filetype = '', channel_type = ''):
     if folder_path: 
         sorted_files= sorted(list(Path(folder_path).glob(f"*.{filetype}"))) 
@@ -166,3 +166,45 @@ def npy_to_histogram (file_path, bins_method='auto'):
     #plt.show()
 
     return output_data
+
+def setup_directories(root_directory, raw_folder_name = 'raw_data'):
+    """Sets up project directory structure.
+
+    Parameters:
+    -----------
+    root_dir : str or Path
+        The main directory containing the raw data folder.
+    raw_folder_name : str
+        The name of the folder containing raw data (default: 'f1').
+
+    Returns:
+    --------
+    f1_path, f2_path, f3_path, f4_path : Path objects
+        Paths to each respective directory.
+    """
+    # Clean and parse parent path
+    base_path = Path(str(root_directory).strip("'\"").replace("\xa0", " "))
+
+    # Path to the raw data folder (f1)
+    f1_path = base_path / raw_folder_name
+
+    # Check if raw data folder exists
+    if not f1_path.exists():
+        print(f"⚠️ Warning: Raw data directory not found at: {f1_path}")
+
+    # Create target paths for f2, f3, f4
+    f2_path = base_path / "npy_files"
+    f3_path = base_path / "stats"
+    f4_path = base_path / "plots"
+
+    # Create the directories safely without throwing errors if they exist
+    for folder in [f2_path, f3_path, f4_path]:
+        folder.mkdir(parents=True, exist_ok=True)
+
+    print("Directory structure ready:")
+    print(f"  ├── Raw Data (raw): {f1_path}")
+    print(f"  ├── npy outputs (npy_files)): {f2_path}")
+    print(f"  ├── Individual statistics (stats): {f3_path}")
+    print(f"  └── Temporal plots (plots): {f4_path}\n")
+
+    return f1_path, f2_path, f3_path, f4_path

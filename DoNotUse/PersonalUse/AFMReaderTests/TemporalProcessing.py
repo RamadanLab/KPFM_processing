@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 import AFMReaderFunctions
 
-''' Functions: 
+''' Functions -- guidance for use: 
 
 ---- extract_and_save_params----
 Used within other functions (see below)
@@ -52,8 +52,7 @@ file_directory, im_time = None,save_path = None, measurement = ''
 Functionality:
 Iterated through files (raw data). im_time takes time for individual measurements and returns 
 a time array for each datapoint. save_path allows saving for individual plot statistics. 
-measurement allows you to calculate SPV within the function (i.e. pixel by pixel subtraction 
-from dark image)
+measurement allows you to calculate SPV within the function (peak-dark, left/right bounds - dark bounds)
 Outputs: 
 gaussian_peaks, time, x_left, x_right  
 Functionality: 
@@ -97,8 +96,8 @@ def extract_and_save_params(popt, pcov, file_path, save_path):
         output_file = os.path.join(save_path, f'{name}_stats.txt')
         with open(output_file, 'w') as f: 
            f.write(statistics)
-    else: 
-        print("Cannot save statistics, continuing")
+    #else:  # For debugging, not necessary
+    #    print("Cannot save statistics, continuing")
     #Final A, mu, sigma, FWHM: 
     vals = [highest['amp'],highest ['cen'], sigma]
     spread = [fwhm, fwhm_err, x_left, x_right]
@@ -189,21 +188,13 @@ def fitting_folder(file_directory, im_time = None,save_path = None, measurement 
         image_time = 1
     clean_directory = Path(str(file_directory).strip("'\"").replace('\xa0', ' '))
     files=sorted([f for f in os.listdir(clean_directory) if f.endswith('.npy')])
-    dark = np.load(files[0])
     t = 0 
+
     for filename in files:
             file_path = os.path.join(clean_directory, filename)
-            array = np.load(file_path)
-            print(array)
             data = AFMReaderFunctions.npy_to_histogram(file_path, bins_method='auto')
-            if measurement == 'SPV': 
-                data = array - dark
-            elif measurement =='CPD': 
-                data = data
-            else: 
-                print("Please select measurment of CPD or SPV")
-                breakpoint
-
+            #array = np.load(file_path) # For debugging
+            #print(array)
             #print(f"\nProcessing file: {filename}") # for debugging
 
             # Separate data 
@@ -216,15 +207,15 @@ def fitting_folder(file_directory, im_time = None,save_path = None, measurement 
 
             # Estimate initial guess and peak count based of personal peak number
             initial_guess, n_peaks = estimate_guess_from_data(x_data, y_data, n_peaks = 1)
+
             # Find fitting parameters:
             #print(f"X-Data Range: {np.min(x_data):.4f} to {np.max(x_data):.4f}") # For debugging
             popt, pcov = curve_fit(multi_gaussian, x_data, y_data, p0=initial_guess, maxfev=1000000)
-            
-            #Find errors for A, mu, sigma from pcov. 
-            perr=np.sqrt(np.diag(pcov))
-            #Extracting and saving params: 
+
+            #Extracting and saving params as .txt: 
             vals, spread = extract_and_save_params(popt, pcov, file_path, save_path)
-            # for debugging: 
+
+            # for checking fitting
             # y_fit =  multi_gaussian(x_data, *popt)
             # plt.plot(x_data, y_data)
             # plt.plot(x_data, y_fit)
@@ -235,5 +226,14 @@ def fitting_folder(file_directory, im_time = None,save_path = None, measurement 
             t += image_time
             time.append(t)
             #print(f"Completed fitting for {filename}")
+    if measurement =='SPV': 
+        dark_peak = gaussian_peaks[0]
+        dark_left = x_left[0]
+        dark_right = x_right[0]
+        for i in range(len(gaussian_peaks)): 
+            gaussian_peaks[i] -=dark_peak
+            x_left[i] -= dark_left
+            x_right[i] -= dark_right
+            
     print(f"Completed processing {len(time)} files!")
     return gaussian_peaks, time, x_left, x_right

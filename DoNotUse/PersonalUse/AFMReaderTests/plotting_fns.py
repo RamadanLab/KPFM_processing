@@ -218,7 +218,6 @@ def time_series_plot(x_fit, y,
         plt.show() 
         return
     
-        .
            
 def stretched_exp_plot (x, y, x_fit, y_fit = None, 
                         save_path = None, 
