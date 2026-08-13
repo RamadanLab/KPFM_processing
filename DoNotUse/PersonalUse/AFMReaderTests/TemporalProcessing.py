@@ -7,7 +7,61 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 import AFMReaderFunctions
 
-def extract_and_save_params(popt, pcov, perr, file_path, save_path):
+''' Functions: 
+
+---- extract_and_save_params----
+Used within other functions (see below)
+Inputs: 
+popt, pcov, file_path, save_path
+Functionality:
+Saves fitting parameters as a .txt file in chosen
+save path, with same name as original file. 
+Outputs: 
+vals, spread 
+
+---- Gaussian ---- 
+Gaussian equation for fitting, now redundant as 
+multi-gaussian can fit single peaks. 
+
+----multi_gaussian----
+Inputs: 
+x, params
+Functionality: 
+Takes variable initial guesses based on data and returns multigaussian 
+fitting depending on prominence of peaks (auto-set to 0.1)
+
+---- estimate_guess_from_data----
+Inputs: x,y, n_peaks, prominence, distance
+Functionality: 
+Creates variable initial estimates for fitting dependant on 
+your specific dataset. 
+
+---- fitting_individual_file----
+Inputs: 
+file_path, peak_guess, save_path: 
+Functionality:
+For use when wanting to fit an individual file, rather than a time series. 
+Outputs: 
+params, vals, spread [saves txt file of fitting parameters]
+params gives raw and fitted data arrays for plotting, vals contains all fitting parameters, 
+spread provides the FWHM value and bounds. 
+
+---- fitting_folder ----
+Inputs: 
+file_directory, im_time = None,save_path = None, measurement = ''
+Functionality:
+Iterated through files (raw data). im_time takes time for individual measurements and returns 
+a time array for each datapoint. save_path allows saving for individual plot statistics. 
+measurement allows you to calculate SPV within the function (i.e. pixel by pixel subtraction 
+from dark image)
+Outputs: 
+gaussian_peaks, time, x_left, x_right  
+Functionality: 
+gaussian peaks outputs fitted peak values as an array. Time outputs an array of same length. 
+x_left and x_right are arrays containing the gaussian spread of each individual peak as an array. 
+'''
+
+def extract_and_save_params(popt, pcov, file_path, save_path):
 
     # Extract Gaussian parameters
     gaussians = []
@@ -16,7 +70,7 @@ def extract_and_save_params(popt, pcov, perr, file_path, save_path):
         cen = popt[i*3+1] # Mu (peak centre)
         wid = abs(popt[i*3+2]) # Sigma
         gaussians.append({'amp': amp, 'cen': cen, 'wid': wid})
-    
+    perr=np.sqrt(np.diag(pcov))
     # Identify the highest peak
     highest = gaussians[np.argmax([g['amp'] for g in gaussians])]
     sigma=highest['wid']
@@ -53,7 +107,6 @@ def extract_and_save_params(popt, pcov, perr, file_path, save_path):
 def gaussian(x, A, mu, sigma): # This is redundant, multigaussian will fit a single if no other peaks are found
     return A * np.exp(-(x - mu)**2 / (2 * sigma**2))
 
-# Function to model N Gaussians
 def multi_gaussian(x, *params):
     n = len(params) // 3
     y = np.zeros_like(x, dtype=float)
@@ -104,7 +157,7 @@ def fitting_individual_file(file_path, peak_guess = 1, save_path=None):
     # Find fitting parameters:
     #print(np.shape(x_data))
     #print(np.shape(y_data))
-    print(f"X-Data Range: {np.min(x_data):.4f} to {np.max(x_data):.4f}")
+    #print(f"X-Data Range: {np.min(x_data):.4f} to {np.max(x_data):.4f}")
     popt, pcov = curve_fit(multi_gaussian, x_data, y_data, p0=initial_guess, maxfev=1000000)
 
     # Using x_fit if datapoints are low to improve fitting
@@ -124,7 +177,7 @@ def fitting_individual_file(file_path, peak_guess = 1, save_path=None):
     return params, vals, spread
     plt.show()
 
-def fitting_folder(file_directory, im_time = None,save_path = None):
+def fitting_folder(file_directory, im_time = None,save_path = None, measurement = ''):
     gaussian_peaks= []
     time = []
     x_left = []
@@ -136,37 +189,46 @@ def fitting_folder(file_directory, im_time = None,save_path = None):
         image_time = 1
     clean_directory = Path(str(file_directory).strip("'\"").replace('\xa0', ' '))
     files=sorted([f for f in os.listdir(clean_directory) if f.endswith('.npy')])
-
+    dark = np.load(files[0])
     t = 0 
     for filename in files:
             file_path = os.path.join(clean_directory, filename)
             array = np.load(file_path)
             print(array)
             data = AFMReaderFunctions.npy_to_histogram(file_path, bins_method='auto')
-            
-            #print(f"\nProcessing file: {filename}")
+            if measurement == 'SPV': 
+                data = array - dark
+            elif measurement =='CPD': 
+                data = data
+            else: 
+                print("Please select measurment of CPD or SPV")
+                breakpoint
+
+            #print(f"\nProcessing file: {filename}") # for debugging
+
             # Separate data 
             x_data = data[:, 0]
             scale_factor = 1e6
             x_data = x_data/scale_factor
-            print(f"post conversion{x_data[0]}")
             y_data = data[:, 1]
 
+            #print(f"post conversion{x_data[0]}") # for debugging
+
             # Estimate initial guess and peak count based of personal peak number
-            initial_guess, n_peaks = estimate_guess_from_data(x_data, y_data, n_peaks =1)
+            initial_guess, n_peaks = estimate_guess_from_data(x_data, y_data, n_peaks = 1)
             # Find fitting parameters:
-            print(f"X-Data Range: {np.min(x_data):.4f} to {np.max(x_data):.4f}")
+            #print(f"X-Data Range: {np.min(x_data):.4f} to {np.max(x_data):.4f}") # For debugging
             popt, pcov = curve_fit(multi_gaussian, x_data, y_data, p0=initial_guess, maxfev=1000000)
             
             #Find errors for A, mu, sigma from pcov. 
             perr=np.sqrt(np.diag(pcov))
-            y_fit = multi_gaussian(x_data, *popt)
-            #plt.plot(x_data,y_data)
-            #plt.plot(x_data, y_fit)
-            #plt.show()
             #Extracting and saving params: 
-            vals, spread = extract_and_save_params(popt, pcov, perr, file_path, save_path)
-
+            vals, spread = extract_and_save_params(popt, pcov, file_path, save_path)
+            # for debugging: 
+            # y_fit =  multi_gaussian(x_data, *popt)
+            # plt.plot(x_data, y_data)
+            # plt.plot(x_data, y_fit)
+            #plt.show()
             gaussian_peaks.append(vals[1])
             x_left.append(spread[2])
             x_right.append(spread[3])
@@ -175,4 +237,3 @@ def fitting_folder(file_directory, im_time = None,save_path = None):
             #print(f"Completed fitting for {filename}")
     print(f"Completed processing {len(time)} files!")
     return gaussian_peaks, time, x_left, x_right
-

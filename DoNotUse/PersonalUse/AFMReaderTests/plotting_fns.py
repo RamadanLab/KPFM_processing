@@ -127,7 +127,7 @@ def time_series_plot(x_fit, y,
                      color = None,
                      measurement = None, scale = None): 
 
-    '''if scale == 'V': 
+    if scale == 'V': 
         x_fit = [round(i*1000,4) if not np.isnan(i) else np.nan for i in x_fit]
         x_left = [round(i*1000,4) if not np.isnan(i) else np.nan for i in x_left]
         x_right = [round(i*1000,4) if not np.isnan(i) else np.nan for i in x_right]
@@ -136,7 +136,7 @@ def time_series_plot(x_fit, y,
         x_left = x_left
         x_right = x_right
     else: 
-        print("Please correct scale input to either V or mV")'''
+        print("Please correct scale input to either V or mV")
 
     if color: 
         color = color
@@ -218,9 +218,8 @@ def time_series_plot(x_fit, y,
         plt.show() 
         return
     
-        
-
-    
+        .
+           
 def stretched_exp_plot (x, y, x_fit, y_fit = None, 
                         save_path = None, 
                         color = None, 
