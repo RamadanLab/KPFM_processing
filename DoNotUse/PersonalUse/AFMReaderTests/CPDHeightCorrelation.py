@@ -7,7 +7,6 @@ def normalise_npy(data):
 
 
 def height_cpd_comparison(height_data, cpd_data):
-    height_data = AFMRead.zero_data(AFMRead.median_line_level(AFMRead.plane_level(height_data)))
     height_norm = normalise_npy(height_data)
     cpd_norm = normalise_npy(cpd_data)
     diff_data = height_norm - cpd_norm

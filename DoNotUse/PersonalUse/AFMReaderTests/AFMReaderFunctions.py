@@ -36,22 +36,25 @@ def load_image(file_path, filetype = '', channel_name = ''):
         return
 
 # Use to debug and check images. Can copy and save separately to refine formatting. 
-def show_image (image_data, scale, channel_name, cmap_label = ''): 
+def show_image (image_data, scale, channel_name, cmap_color = None, cmap_label = ''): 
 
     # Scale adjustment 
     pixels_x, pixels_y = image_data.shape
     x_nm = pixels_x*scale
     y_nm = pixels_y *scale
     fig, ax = plt.subplots(figsize=(6,8))
-
+    if cmap_color: 
+        cmap_final = cmap_color
+    else: 
+        cmap_final = 'gray'
     im = ax.imshow(
         image_data, 
-        cmap = 'gray', 
+        cmap = cmap_final, 
         origin = 'lower', 
         extent = [0,x_nm, 0, y_nm]
        )
     
-    plt.colorbar(im, ax = ax, label = cmap_label)
+    plt.colorbar(im, fraction = 0.046, pad = 0.04, ax = ax, label = cmap_label)
     plt.title(channel_name)
     plt.xlabel('nm')
     plt.ylabel('nm')
