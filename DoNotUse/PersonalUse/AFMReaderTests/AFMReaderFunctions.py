@@ -60,6 +60,12 @@ def show_image (image_data, scale, channel_name, cmap_label = ''):
     plt.show()
     return fig
 
+
+def zero_data(image_array): 
+    min_val = np.min(image_array)
+    image_array -= min_val
+    return image_array
+
 # Best to start with if overall image tilt. You can try this with no other processing first. 
 def plane_level(image_array):
     # x + y coordinates for each pixel. 

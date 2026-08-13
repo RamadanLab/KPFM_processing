@@ -18,3 +18,8 @@ from matplotlib.ticker import MaxNLocator
 from scipy.signal import find_peaks
 from scipy.ndimage import gaussian_filter1d
 from tqdm import tqdm
+import AFMReaderFunctions as AFMRead
+import plotting_fns as pf
+import TemporalProcessing as tp
+import TemporalFitting_exp as tfx
+import CPDHeightCorrelation as chc
