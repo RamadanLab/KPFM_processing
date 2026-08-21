@@ -1,8 +1,0 @@
-Analysis for 40 nm [in mV]:
-Grain boundary peak = -663.3529180734581
-Grain boundary fwhm = 11.102980379932784
-Grain boundary min, max spread = 0, 0
-Grain interior peak = -664.0075973487774
-Grain interior fwhm = 10.397539524645548
-Grain interior min, max spread = 0, 0
-Diff of GB/GI = 0.6546792753192587

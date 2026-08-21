@@ -1,8 +1,0 @@
-Analysis for 60 nm [in mV]:
-Grain boundary peak = 177.35779123480125
-Grain boundary fwhm = 29.95286852031612
-Grain boundary min, max spread = 0, 0
-Grain interior peak = 176.68691012766013
-Grain interior fwhm = 31.25968121203545
-Grain interior min, max spread = 0, 0
-Diff of GB/GI = 0.6708811071411136

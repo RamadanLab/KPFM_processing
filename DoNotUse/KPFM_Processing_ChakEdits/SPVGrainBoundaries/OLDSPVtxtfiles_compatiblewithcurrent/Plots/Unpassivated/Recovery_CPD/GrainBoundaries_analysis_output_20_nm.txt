@@ -1,6 +1,0 @@
-Analysis for 20 nm:
-Grain boundary peak = -0.8126011031784032
-Grain boundary fwhm = 0.014495345150737188
-Grain interior peak = -0.8134140852923053
-Grain interior fwhm = 0.015236926645239773
-Diff of GB/GI =-0.0008129821139021276

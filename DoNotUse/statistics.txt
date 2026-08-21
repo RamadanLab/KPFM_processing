@@ -1,4 +1,0 @@
-Peak: 75.769 mV
-FWHM: 21.59 mV
-Sigma: 9.169 mV
-Bounds: [64.97, 86.57]mV
